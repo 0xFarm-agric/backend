@@ -1,9 +1,9 @@
 package services
 
 import (
-	"0xfarms-backend/internal/adapters"
-	"0xfarms-backend/internal/core/domain"
-	"0xfarms-backend/internal/ports"
+	"0xFarms-backend/internal/adapters"
+	"0xFarms-backend/internal/core/domain"
+	"0xFarms-backend/internal/ports"
 	"errors"
 	"math"
 	"time"
@@ -11,21 +11,21 @@ import (
 	"github.com/google/uuid"
 )
 
-// FarmManagementSystem handles all farm operations
-type FarmManagementSystem struct {
+// FarmManagementSystemService handles all farm operations
+type FarmManagementSystemService struct {
 	db ports.MongoDB
 }
 
-// NewFarmManagementSystem initializes a new farm management system
-func NewFarmManagementSystem(db ports.MongoDB) *FarmManagementSystem {
-	system := &FarmManagementSystem{
+// NewFarmManagementSystemService initializes a new farm management system
+func NewFarmManagementSystemService(db ports.MongoDB) *FarmManagementSystemService {
+	system := &FarmManagementSystemService{
 		db: db,
 	}
 	return system
 }
 
 // // initializeCropSpecs sets up default crop specifications
-// func (fms *FarmManagementSystem) initializeCropSpecs() {
+// func (fms *FarmManagementSystemService) initializeCropSpecs() {
 // 	fms.crops["lettuce"] = domain.CropSpecification{
 // 		Name:               "Lettuce",
 // 		OptimalPH:          6.5,
@@ -39,7 +39,7 @@ func NewFarmManagementSystem(db ports.MongoDB) *FarmManagementSystem {
 // }
 
 // CreateFarm initializes a new vertical farm
-func (fms *FarmManagementSystem) CreateFarm(width, height float64, cropType string) (*domain.VerticalFarm, error) {
+func (fms *FarmManagementSystemService) CreateFarm(width, height float64, cropType string) (*domain.VerticalFarm, error) {
 	if width <= 0 || height <= 0 {
 		return nil, errors.New("invalid dimensions")
 	}
@@ -73,7 +73,7 @@ func (fms *FarmManagementSystem) CreateFarm(width, height float64, cropType stri
 }
 
 // AddOwner adds a new owner to the farm
-func (fms *FarmManagementSystem) AddOwner(farmID, address string, shareSize float64) error {
+func (fms *FarmManagementSystemService) AddOwner(farmID, address string, shareSize float64) error {
 	farm, err := fms.db.GetFarm(farmID)
 	if err != nil {
 		return err
@@ -102,7 +102,7 @@ func (fms *FarmManagementSystem) AddOwner(farmID, address string, shareSize floa
 }
 
 // AddIoTReading adds a new IoT sensor reading and updates farm status
-func (fms *FarmManagementSystem) AddIoTReading(farmID string, reading domain.IoTReading) error {
+func (fms *FarmManagementSystemService) AddIoTReading(farmID string, reading domain.IoTReading) error {
 	farm, err := fms.db.GetFarm(farmID)
 	if err != nil {
 		return err
@@ -134,12 +134,12 @@ func (fms *FarmManagementSystem) AddIoTReading(farmID string, reading domain.IoT
 }
 
 // GetFarmStatus retrieves current farm status and analytics
-func (fms *FarmManagementSystem) GetFarmStatus(farmID string) (*domain.VerticalFarm, error) {
+func (fms *FarmManagementSystemService) GetFarmStatus(farmID string) (*domain.VerticalFarm, error) {
 	return fms.db.GetFarm(farmID)
 }
 
 // calculateHealthScore determines crop health based on environmental conditions
-func (fms *FarmManagementSystem) calculateHealthScore(reading domain.IoTReading, spec domain.CropSpecification) int {
+func (fms *FarmManagementSystemService) calculateHealthScore(reading domain.IoTReading, spec domain.CropSpecification) int {
 	phScore := 100 - math.Abs(reading.SoilPH-spec.OptimalPH)*10
 	humidityScore := 100 - math.Abs(reading.Humidity-spec.OptimalHumidity)
 	tempScore := 100 - math.Abs(reading.Temperature-spec.OptimalTemp)*2
@@ -152,7 +152,7 @@ func (fms *FarmManagementSystem) calculateHealthScore(reading domain.IoTReading,
 }
 
 // calculateExpectedYield estimates crop yield based on current conditions
-func (fms *FarmManagementSystem) calculateExpectedYield(farm *domain.VerticalFarm, health int, spec domain.CropSpecification) float64 {
+func (fms *FarmManagementSystemService) calculateExpectedYield(farm *domain.VerticalFarm, health int, spec domain.CropSpecification) float64 {
 	baseYield := farm.TotalArea * spec.ExpectedYieldPerM2
 	healthFactor := float64(health) / 100.0
 	return baseYield * healthFactor
@@ -162,7 +162,7 @@ func (fms *FarmManagementSystem) calculateExpectedYield(farm *domain.VerticalFar
 func mains() {
 	db, _ := adapters.NewMongoAdapter("")
 	// Initialize the system
-	fms := NewFarmManagementSystem(db)
+	fms := NewFarmManagementSystemService(db)
 
 	// Create a new vertical farm
 	farm, _ := fms.CreateFarm(10.0, 5.0, "lettuce")
@@ -186,7 +186,7 @@ func mains() {
 }
 
 // getCropSpecification retrieves the crop specification from the database
-func (fms *FarmManagementSystem) getCropSpecification(cropType string) (domain.CropSpecification, bool) {
+func (fms *FarmManagementSystemService) getCropSpecification(cropType string) (domain.CropSpecification, bool) {
 	// Fetch crop specification from the database
 	cropSpec, err := fms.db.GetCropSpecification(cropType)
 	if err != nil {

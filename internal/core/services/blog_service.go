@@ -1,8 +1,8 @@
 package services
 
 import (
-	"0xfarms-backend/internal/core/domain"
-	"0xfarms-backend/internal/ports"
+	"0xFarms-backend/internal/core/domain"
+	"0xFarms-backend/internal/ports"
 	"errors"
 
 	"github.com/google/uuid"
@@ -16,7 +16,6 @@ type BlogService struct {
 
 // NewBlogService creates a new instance of the blog service
 func NewBlogService(mongoDB ports.MongoDB) *BlogService {
-
 	return &BlogService{db: mongoDB}
 }
 
@@ -104,4 +103,13 @@ func (s *BlogService) VoteComment(blogID string, commentID string, upvote bool) 
 		return false, err
 	}
 	return ok, nil
+}
+
+// SearchBlogs retrieves blog posts based on the provided filters
+func (s *BlogService) SearchBlogs(filters *domain.BlogFilters) ([]domain.Blog, error) {
+	blogs, err := s.db.RetrieveBlogsByFilters(filters)
+	if err != nil {
+		return []domain.Blog{}, err
+	}
+	return blogs, nil
 }

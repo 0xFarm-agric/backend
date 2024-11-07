@@ -1,7 +1,7 @@
 package adapters
 
 import (
-	"0xfarms-backend/internal/core/domain"
+	"0xFarms-backend/internal/core/domain"
 	"context"
 	"errors"
 	"time"
@@ -310,6 +310,26 @@ func (db *DB) UpdateCommentVote(blogID string, commentID string, upvote bool) (b
 	}
 
 	return true, nil
+}
+
+// RetrieveBlogsByFilters retrieves blog posts based on the provided filters
+func (db *DB) RetrieveBlogsByFilters(filters *domain.BlogFilters) ([]domain.Blog, error) {
+	var blogs []domain.Blog
+	// query := bson.M{}
+
+	// if filters.Category != "" {
+	// 	query["category"] = filters.Category
+	// }
+
+	// if filters.Title != "" {
+	// 	query["title"] = bson.M{"$regex": primitive.Regex{Pattern: filters.Title, Options: "i"}}
+	// }
+
+	// err := db.blogCollection.Find(query).All(&blogs)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	return blogs, nil
 }
 
 // CreateFarm creates a new vertical farm in the database

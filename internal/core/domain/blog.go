@@ -27,3 +27,7 @@ type Comment struct {
 	CreatedAt  time.Time `bson:"createdAt" json:"createdAt"`
 	Votes      int       `bson:"votes" json:"votes"`
 }
+type BlogFilters struct {
+	Category string
+	Title    string
+}
