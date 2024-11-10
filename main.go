@@ -6,6 +6,7 @@ import (
 	"0xFarms-backend/internal/core/services"
 	"0xFarms-backend/internal/web"
 	"0xFarms-backend/internal/web/handlers"
+	"0xFarms-backend/pkg/logger"
 	"context"
 	"fmt"
 	"log"
@@ -18,6 +19,10 @@ import (
 )
 
 func main() {
+
+	// Initialize the logger
+	logger.InitLogger()
+
 	// Load the application configuration
 	cfg, err := config.LoadConfig()
 	if err != nil {

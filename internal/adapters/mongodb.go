@@ -2,8 +2,10 @@ package adapters
 
 import (
 	"0xFarms-backend/internal/core/domain"
+	"0xFarms-backend/pkg/logger"
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -41,6 +43,8 @@ func NewMongoAdapter(mongoURI string) (*DB, error) {
 	farmCollection := client.Database("0xFarms").Collection("vertical_farms")
 	cropSpecCollection := client.Database("0xFarms").Collection("crop_specs")
 	userCollection := client.Database("0xFarms").Collection("users")
+
+	logger.LogInfo(fmt.Sprintf("Successfully connected to database"))
 	return &DB{
 		blogCollection:     blogCollection,
 		farmCollection:     farmCollection,
@@ -131,10 +135,12 @@ func (db *DB) SaveBlog(blog *domain.Blog) (bool, error) {
 
 	result, err := db.blogCollection.InsertOne(ctx, blog)
 	if err != nil {
+		logger.LogWarning(fmt.Sprintf("Failed to save blog %s: %v", blog.ID, err))
 		return false, err
 	}
 
 	blog.ID = result.InsertedID.(primitive.ObjectID)
+	logger.LogInfo(fmt.Sprintf("Blog saved to db, %s", blog.ID))
 	return true, nil
 }
 
